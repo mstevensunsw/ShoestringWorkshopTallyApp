@@ -6,7 +6,7 @@ The Workshop Tally App is a mobile-friendly tool for recording participant votes
 ## Quick Start
 
 ### 1. Open the App
-- Open `workshop_tally_app_v3.html` in your mobile browser (Chrome, Safari, Firefox, etc.)
+- Open `workshop_tally_app.html` in your mobile browser (Chrome, Safari, Firefox, etc.)
 - Works offline once loaded
 - No installation required
 
