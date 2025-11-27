@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoestring Workshop Tally V3</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+            padding-bottom: 120px;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .workshop-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .workshop-info label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            opacity: 0.8;
+        }
+        
+        .workshop-info input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .header select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+        
+        .solution-area {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .solution-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .counters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .counter {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .counter.green {
+            background: #d4edda;
+        }
+        
+        .counter.yellow {
+            background: #fff3cd;
+        }
+        
+        .counter-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .counter.green .counter-label {
+            color: #155724;
+        }
+        
+        .counter.yellow .counter-label {
+            color: #856404;
+        }
+        
+        .counter-display {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .counter.green .counter-display {
+            color: #28a745;
+        }
+        
+        .counter.yellow .counter-display {
+            color: #ffc107;
+        }
+        
+        .counter-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .counter-btn {
+            padding: 8px 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .counter.green .counter-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .counter.yellow .counter-btn {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .export-btn, .export-agg-btn, .reset-btn, .reset-all-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .export-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .export-agg-btn {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .reset-btn {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .reset-all-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .summary {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .summary h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #0056b3;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stat.green .stat-value {
+            color: #28a745;
+        }
+        
+        .stat.yellow .stat-value {
+            color: #ffc107;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Workshop Tally<span class="version-badge">V3</span></h1>
+        
+        <div class="workshop-info">
+            <label>Workshop Date</label>
+            <input type="date" id="workshopDate" onchange="saveWorkshopInfo()">
+            
+            <label>Workshop Location</label>
+            <input type="text" id="workshopLocation" placeholder="e.g., Queanbeyan" onchange="saveWorkshopInfo()">
+        </div>
+        
+        <select id="categorySelect">
+            <option value="">Select Category...</option>
+            <option value="PRICE">PRICE</option>
+            <option value="QUALITY">QUALITY</option>
+            <option value="DELIVERY">DELIVERY</option>
+            <option value="AGILITY">AGILITY</option>
+            <option value="SUSTAINABILITY">SUSTAINABILITY</option>
+            <option value="PEOPLE & INFORMATION">PEOPLE & INFORMATION</option>
+            <option value="PLANT & EQUIPMENT">PLANT & EQUIPMENT</option>
+            <option value="SUPPLY CHAIN">SUPPLY CHAIN</option>
+            <option value="DEMAND MANAGEMENT">DEMAND MANAGEMENT</option>
+            <option value="CASH FLOW">CASH FLOW</option>
+        </select>
+    </div>
+    
+    <div id="summary" class="summary" style="display: none;">
+        <h2>Category Summary</h2>
+        <div class="summary-stats">
+            <div class="stat green">
+                <div class="stat-value" id="totalGreen">0</div>
+                <div class="stat-label">Priority (Green)</div>
+            </div>
+            <div class="stat yellow">
+                <div class="stat-value" id="totalYellow">0</div>
+                <div class="stat-label">Interesting (Yellow)</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="solutionAreas"></div>
+    
+    <div class="bottom-bar">
+        <div class="button-row">
+            <button class="export-btn" onclick="exportData()">📊 Export Raw</button>
+            <button class="export-agg-btn" onclick="exportAggregated()">📈 Export Aggregated</button>
+        </div>
+        <div class="button-row">
+            <button class="reset-btn" onclick="resetCategory()">🔄 Reset Category</button>
+            <button class="reset-all-btn" onclick="resetAllData()">⚠️ Reset All Data</button>
+        </div>
+    </div>
+
+    <script>
+        const solutionAreasByCategory = {
+            "PRICE": ["Job tracking", "Issue reporting and change management support", "Digital instructions", "Capacity monitoring", "Internal lead time monitoring", "Operations simulation", "Disruption monitoring", "Maintenance support", "Quality data capture", "Project management", "Quoting support", "Scheduling support", "Inventory management", "Costing support", "Energy usage monitoring", "Waste monitoring", "Procurement support", "Cost variance tracking"],
+            "QUALITY": ["Issue reporting and change management support", "Digital instructions", "Digital job cards", "Process monitoring", "Setup support", "Quality data capture", "Product use monitoring", "Equipment diagnostic support", "Quality inspection", "Goods in management", "Supply chain monitoring", "Tool management support", "Employee training delivery", "Employee training management", "Kitting support"],
+            "DELIVERY": ["Job tracking", "Issue reporting and change management support", "Capacity monitoring", "Demand reporting", "Internal lead time monitoring", "Disruption monitoring", "Digital job cards", "Process monitoring", "Maintenance support", "Scheduling support", "Layout planning support", "Quality inspection", "Inventory management", "Goods in management", "Supply chain monitoring", "Procurement support", "Equipment monitoring", "Kitting support", "Shop floor replenishment support"],
+            "AGILITY": ["Job tracking", "Issue reporting and change management support", "Capacity monitoring", "Demand reporting", "Internal lead time monitoring", "Operations simulation", "Disruption monitoring", "Digital job cards", "Setup support", "Product use monitoring", "Project management", "Quoting support", "Scheduling support", "Costing support", "Supply chain monitoring", "Procurement support"],
+            "SUSTAINABILITY": ["Demand reporting", "Process monitoring", "Maintenance support", "Product use monitoring", "Equipment diagnostic support", "Inventory management", "Energy usage monitoring", "Waste monitoring", "Supply chain monitoring", "Emission monitoring", "Working conditions monitoring", "Sustainability reporting support"],
+            "PEOPLE & INFORMATION": ["Job tracking", "Issue reporting and change management support", "Digital instructions", "Capacity monitoring", "Demand reporting", "Disruption monitoring", "Digital job cards", "Setup support", "Quality data capture", "Project management", "Quoting support", "Scheduling support", "Layout planning support", "Equipment diagnostic support", "Quality inspection", "Inventory management", "Goods in management", "Energy usage monitoring", "Waste monitoring", "KPI reporting", "Tool management support", "Employee training delivery", "Employee training management", "Emission monitoring", "Procurement support", "Working conditions monitoring", "Cost variance tracking"],
+            "PLANT & EQUIPMENT": ["Capacity monitoring", "Internal lead time monitoring", "Operations simulation", "Disruption monitoring", "Process monitoring", "Maintenance support", "Setup support", "Scheduling support", "Layout planning support", "Equipment diagnostic support", "Energy usage monitoring", "Waste monitoring", "Tool management support", "Equipment monitoring", "Shop floor replenishment support"],
+            "SUPPLY CHAIN": ["Demand reporting", "Disruption monitoring", "Inventory management", "Cash management", "Goods in management", "Supply chain monitoring", "Procurement support", "Shop floor replenishment support"],
+            "DEMAND MANAGEMENT": ["Capacity monitoring", "Demand reporting", "Internal lead time monitoring", "Operations simulation", "Product use monitoring", "Quoting support", "Scheduling support", "Inventory management"],
+            "CASH FLOW": ["Job tracking", "Capacity monitoring", "Demand reporting", "Internal lead time monitoring", "Disruption monitoring", "Project management", "Quoting support", "Scheduling support", "Inventory management", "Cash management", "Goods in management", "KPI reporting", "Supply chain monitoring", "Procurement support", "Cost variance tracking"]
+        };
+        
+        let tallies = {};
+        let workshopInfo = { date: '', location: '' };
+        
+        function loadCategory(category) {
+            if (!category) {
+                document.getElementById('solutionAreas').innerHTML = '';
+                document.getElementById('summary').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('summary').style.display = 'block';
+            
+            const areas = solutionAreasByCategory[category];
+            const container = document.getElementById('solutionAreas');
+            
+            // Initialize tallies for this category if not exists
+            if (!tallies[category]) {
+                tallies[category] = {};
+                areas.forEach(area => {
+                    tallies[category][area] = { green: 0, yellow: 0 };
+                });
+            }
+            
+            container.innerHTML = areas.map((area, index) => {
+                const areaId = `area-${index}`;
+                const green = tallies[category][area].green;
+                const yellow = tallies[category][area].yellow;
+                
+                return `
+                    <div class="solution-area">
+                        <div class="solution-name">${area}</div>
+                        <div class="counters">
+                            <div class="counter green">
+                                <div class="counter-label">Priority</div>
+                                <div class="counter-display" id="${areaId}-green">${green}</div>
+                                <div class="counter-buttons">
+                                    <button class="counter-btn" onclick="decrement('${category}', '${area}', 'green')">−</button>
+                                    <button class="counter-btn" onclick="increment('${category}', '${area}', 'green')">+</button>
+                                </div>
+                            </div>
+                            <div class="counter yellow">
+                                <div class="counter-label">Interesting</div>
+                                <div class="counter-display" id="${areaId}-yellow">${yellow}</div>
+                                <div class="counter-buttons">
+                                    <button class="counter-btn" onclick="decrement('${category}', '${area}', 'yellow')">−</button>
+                                    <button class="counter-btn" onclick="increment('${category}', '${area}', 'yellow')">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            updateSummary(category);
+        }
+        
+        function increment(category, area, color) {
+            tallies[category][area][color]++;
+            const areaIndex = solutionAreasByCategory[category].indexOf(area);
+            document.getElementById(`area-${areaIndex}-${color}`).textContent = tallies[category][area][color];
+            updateSummary(category);
+            saveToLocalStorage();
+        }
+        
+        function decrement(category, area, color) {
+            if (tallies[category][area][color] > 0) {
+                tallies[category][area][color]--;
+                const areaIndex = solutionAreasByCategory[category].indexOf(area);
+                document.getElementById(`area-${areaIndex}-${color}`).textContent = tallies[category][area][color];
+                updateSummary(category);
+                saveToLocalStorage();
+            }
+        }
+        
+        function updateSummary(category) {
+            let totalGreen = 0;
+            let totalYellow = 0;
+            
+            Object.values(tallies[category]).forEach(counts => {
+                totalGreen += counts.green;
+                totalYellow += counts.yellow;
+            });
+            
+            document.getElementById('totalGreen').textContent = totalGreen;
+            document.getElementById('totalYellow').textContent = totalYellow;
+        }
+        
+        function resetCategory() {
+            const category = document.getElementById('categorySelect').value;
+            if (!category) return;
+            
+            if (confirm(`Reset all counts for ${category}?`)) {
+                const areas = solutionAreasByCategory[category];
+                areas.forEach(area => {
+                    tallies[category][area] = { green: 0, yellow: 0 };
+                });
+                loadCategory(category);
+                saveToLocalStorage();
+            }
+        }
+        
+        function resetAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL tally data for ALL categories. Are you sure?')) {
+                if (confirm('This action cannot be undone. Continue?')) {
+                    tallies = {};
+                    workshopInfo = { date: '', location: '' };
+                    document.getElementById('workshopDate').value = '';
+                    document.getElementById('workshopLocation').value = '';
+                    document.getElementById('categorySelect').value = '';
+                    document.getElementById('solutionAreas').innerHTML = '';
+                    document.getElementById('summary').style.display = 'none';
+                    saveToLocalStorage();
+                    alert('✅ All data has been cleared. Ready for a new workshop!');
+                }
+            }
+        }
+        
+        function saveWorkshopInfo() {
+            workshopInfo.date = document.getElementById('workshopDate').value;
+            workshopInfo.location = document.getElementById('workshopLocation').value;
+            saveToLocalStorage();
+        }
+        
+        function exportData() {
+            const date = workshopInfo.date || 'Not specified';
+            const location = workshopInfo.location || 'Not specified';
+            
+            let csv = `Workshop Date: ${date}\n`;
+            csv += `Workshop Location: ${location}\n\n`;
+            csv += 'Category,Solution Area,Priority (Green),Interesting (Yellow)\n';
+            
+            Object.keys(tallies).forEach(category => {
+                Object.keys(tallies[category]).forEach(area => {
+                    const green = tallies[category][area].green;
+                    const yellow = tallies[category][area].yellow;
+                    csv += `"${category}","${area}",${green},${yellow}\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const filename = location ? 
+                `shoestring-raw-${location.replace(/\s+/g, '-')}-${date}.csv` :
+                `shoestring-raw-${date}.csv`;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function exportAggregated() {
+            const date = workshopInfo.date || 'Not specified';
+            const location = workshopInfo.location || 'Not specified';
+            
+            // Aggregate all solution areas across categories
+            const aggregated = {};
+            
+            Object.keys(tallies).forEach(category => {
+                Object.keys(tallies[category]).forEach(area => {
+                    if (!aggregated[area]) {
+                        aggregated[area] = { green: 0, yellow: 0 };
+                    }
+                    aggregated[area].green += tallies[category][area].green;
+                    aggregated[area].yellow += tallies[category][area].yellow;
+                });
+            });
+            
+            // Sort alphabetically
+            const sortedAreas = Object.keys(aggregated).sort();
+            
+            // Create CSV
+            let csv = `Workshop Date: ${date}\n`;
+            csv += `Workshop Location: ${location}\n\n`;
+            csv += 'Solution Area,Total Priority (Green),Total Interesting (Yellow),Total Votes\n';
+            
+            sortedAreas.forEach(area => {
+                const green = aggregated[area].green;
+                const yellow = aggregated[area].yellow;
+                const total = green + yellow;
+                csv += `"${area}",${green},${yellow},${total}\n`;
+            });
+            
+            // Add summary row
+            const totalGreen = sortedAreas.reduce((sum, area) => sum + aggregated[area].green, 0);
+            const totalYellow = sortedAreas.reduce((sum, area) => sum + aggregated[area].yellow, 0);
+            const grandTotal = totalGreen + totalYellow;
+            csv += `\n"TOTAL",${totalGreen},${totalYellow},${grandTotal}\n`;
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const filename = location ? 
+                `shoestring-aggregated-${location.replace(/\s+/g, '-')}-${date}.csv` :
+                `shoestring-aggregated-${date}.csv`;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function saveToLocalStorage() {
+            localStorage.setItem('shoestringTallies', JSON.stringify(tallies));
+            localStorage.setItem('shoestringWorkshopInfo', JSON.stringify(workshopInfo));
+        }
+        
+        function loadFromLocalStorage() {
+            const savedTallies = localStorage.getItem('shoestringTallies');
+            if (savedTallies) {
+                tallies = JSON.parse(savedTallies);
+            }
+            
+            const savedInfo = localStorage.getItem('shoestringWorkshopInfo');
+            if (savedInfo) {
+                workshopInfo = JSON.parse(savedInfo);
+                document.getElementById('workshopDate').value = workshopInfo.date || '';
+                document.getElementById('workshopLocation').value = workshopInfo.location || '';
+            }
+        }
+        
+        // Initialize
+        document.getElementById('categorySelect').addEventListener('change', (e) => {
+            loadCategory(e.target.value);
+        });
+        
+        loadFromLocalStorage();
+    </script>
+</body>
+</html>
