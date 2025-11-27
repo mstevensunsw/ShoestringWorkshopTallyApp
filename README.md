@@ -111,9 +111,9 @@ A: No, it's permanent. Always export first!
 
 ## File Versions
 
-- **V1**: Basic tally with raw export
-- **V2**: Adds aggregated export option
-- **V3** (RECOMMENDED): Adds workshop metadata and reset all functionality
+- **V0**: Basic tally with raw export
+- **V0.1**: Adds aggregated export option
+- **V1** Adds workshop metadata and reset all functionality
 
 ## Export File Examples
 
