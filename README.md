@@ -111,9 +111,7 @@ A: No, it's permanent. Always export first!
 
 ## File Versions
 
-- **V0**: Basic tally with raw export
-- **V0.1**: Adds aggregated export option
-- **V1** Adds workshop metadata and reset all functionality
+- 0.1.0 initial version for pre-release
 
 ## Export File Examples
 
@@ -148,7 +146,7 @@ For issues or questions, contact Michael Stevens.
 
 ---
 
-**Version**: 3.0  
+**Readme Version**: 0.1.0 
 **Last Updated**: November 2024  
 **Created for**: Shoestring Digital Manufacturing (University of Cambridge, UNSW Canberra and other Shoestring Partner Organisations)
 
